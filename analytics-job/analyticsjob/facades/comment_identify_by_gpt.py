@@ -6,8 +6,12 @@ import json
 def get_by_push_event(change_files: str) -> GptIdentityResponse:
     prompt = (
         """
-あなたは何人ものエンジニアを育成してきたシニアエンジニアです。以下のユーザのコードを見て、ユーザのエンジニアとしてのアイデンティティを評価してください。
-以下の項目について0~1の間でスコアと、その理由を具体的なソースコードを示し、250字以内で記入してください。判断できない場合は0.5を記入し、判断できない旨を記載してください。
+あなたは何人ものエンジニアを育成してきたシニアエンジニアです。以下のユーザのコードを見て、ユーザのエンジニアとしてのアイデンティティを診断してください。
+スキルを評価するのではなく、その人の特徴を見極める、ということを心がけてください。
+以下の項目について0~1の間で、どちらの傾向があるか示してください。
+このスコアは、1が最も良いわけではなく、位置付けを示すものであるので、0であることも否定的にはならないでください。判断できない場合やどちらの属性も含まれる場合は0.5を記入し、判断できない旨を記載してください。
+またその理由を具体的なソースコードを示し、250字以内で記入してください。
+
 1. 変数名の付け方
 変数の付け方が、簡潔な変数をつける傾向が高い場合は1に近い数字、長いが説明的な変数をつける傾向に高い場合は0に近い数字をつけてください。
 2. クラスやメソッド分割の粒度
@@ -17,27 +21,28 @@ def get_by_push_event(change_files: str) -> GptIdentityResponse:
 4. コミットの粒度
 クラス作成、メソッド作成するたびにコミットする傾向が高い場合は1に近い数字、一つの機能を実装するまでコミットをしない傾向が高い場合は0に近い数字をつけてください。
 
-また、上記の分析結果とソースコードの内容元に、その人物のエンジニアとしてのアイデンティティの説明を250文字以内で記入と、10文字程度でその人物のエンジニアとしてのアイデンティティを示す、ラベル付を行ってください
+また、上記の分析結果とソースコードの内容元に、その人物のエンジニアとしてのアイデンティティの説明を250文字以内で記入と、10文字程度でその人物のエンジニアとしてのアイデンティティを示す、ラベル付を行ってください。
 ラベル付は「XXXXなYYYYY者」のような、その人の特徴を示す面白いラベルをお願いいたします。
+どちらの項目も、否定的な文言は利用せず、その人のアイデンティティをポジティブに捉えるように記入してください。すべての文章は必ず褒めてください。
 
 結果はjson形式で出力してください。
 コードブロックは必ず含めないでください。
 
 {
     "variable_name_simplicity_rate":{
-        "rate": 1. 変数名の付け方のスコア,
+        "rate": 1. 変数名の付け方の傾向,
         "reason": "理由"
     },
     "method_splitting_coarseness_rate":{
-        "rate": 2. クラスやメソッド分割の粒度のスコア,
+        "rate": 2. クラスやメソッド分割の粒度の傾向,
         "reason": "理由"
     },
     "processing_intent_communicating_rate":{
-        "rate": 3. 処理の意図を伝える手段のスコア,
+        "rate": 3. 処理の意図を伝える手段の傾向,
         "reason": "理由"
     },
     "commit_granularity_rate":{
-        "rate": 4. コミットの粒度のスコア,
+        "rate": 4. コミットの粒度の傾向,
         "reason": "理由"
     }
     "summary_comment": "エンジニアとしてのアイデンティティの説明を250文字以内で記入",
@@ -50,5 +55,16 @@ def get_by_push_event(change_files: str) -> GptIdentityResponse:
     )
 
     response = generate_text(prompt)
-    parsed_data = GptIdentityResponse.model_validate(json.loads(response))
+    try:
+        parsed_data = GptIdentityResponse.model_validate(json.loads(response))
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        parsed_data = GptIdentityResponse(
+            variable_name_simplicity_rate={"rate": 0.5, "reason": "解析できませんでした"},
+            method_splitting_coarseness_rate={"rate": 0.5, "reason": "解析できませんでした"},
+            processing_intent_communicating_rate={"rate": 0.5, "reason": "解析できませんでした"},
+            commit_granularity_rate={"rate": 0.5, "reason": "解析できませんでした"},
+            summary_comment="解析できませんでした",
+            identity_name="解析できませんでした",
+        )
     return parsed_data
