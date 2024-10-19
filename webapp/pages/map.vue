@@ -1,156 +1,161 @@
 <script setup lang="ts">
-import { reactive } from "vue";
 import * as vNG from "v-network-graph";
+import { useMouse } from "@vueuse/core";
+import { initialConfigs, type Edge, type Node } from "~/lib/network-graph-config";
 
-interface Node extends vNG.Node {
-  img: string;
-}
+const client = useSupabaseClient();
+const userId = ref("");
 
-interface Edge extends vNG.Edge {
-  width: number;
-  color: string;
-  dashed?: boolean;
-}
-
-const nodes: Record<string, Node> = {
-  node1: { name: "佐藤", img: "url.png" },
-  node2: { name: "鈴木", img: "url.png" },
-  node3: { name: "田中", img: "url.png" },
-  node4: { name: "高橋", img: "url.png" },
-  node5: { name: "森", img: "url.png" },
-};
-
-const edges: Record<string, Edge> = {
-  edge1: { source: "node2", target: "node5", width: 1, color: "red" },
-  edge2: { source: "node2", target: "node3", width: 1, color: "blue" },
-  edge3: { source: "node3", target: "node4", width: 1, color: "blue" },
-  edge4: {
-    source: "node3",
-    target: "node4",
-    width: 1,
-    color: "rgb(222 156 7)",
-  },
-  edge5: { source: "node4", target: "node5", width: 1, color: "red" },
-  edge6: { source: "node4", target: "node5", width: 1, color: "blue" },
-  edge7: {
-    source: "node4",
-    target: "node5",
-    width: 1,
-    color: "rgb(222 156 7)",
-  },
-  edge8: { source: "node4", target: "node5", width: 1, color: "green" },
-};
-
-const layouts = {
-  nodes: {
-    node1: { x: 0, y: 0 },
-    node2: { x: 80, y: 80 },
-    node3: { x: 160, y: 0 },
-    node4: { x: 240, y: 80 },
-    node5: { x: 320, y: 0 },
-  },
-};
-
-const initialConfigs = vNG.defineConfigs<Node, Edge>({
-  node: {
-    selectable: true,
-    normal: {
-      type: "circle",
-      radius: 32,
-      strokeWidth: 0,
-      strokeColor: "#000000",
-      strokeDasharray: "0",
-      color: "#4466cc",
-    },
-    hover: {
-      type: "circle",
-      radius: 38,
-      strokeWidth: 0,
-      strokeColor: "#000000",
-      strokeDasharray: "0",
-      color: "#dd2288",
-    },
-    selected: {
-      type: "circle",
-      radius: 38,
-      strokeWidth: 0,
-      strokeColor: "#000000",
-      strokeDasharray: "0",
-      color: "#4466cc",
-    },
-    label: {
-      visible: true,
-      fontFamily: undefined,
-      fontSize: 11,
-      lineHeight: 1.1,
-      color: "#000000",
-      margin: 4,
-      direction: "south",
-      background: {
-        visible: false,
-        color: "#ffffff",
-        padding: {
-          vertical: 1,
-          horizontal: 4,
-        },
-        borderRadius: 2,
-      },
-    },
-    focusring: {
-      visible: true,
-      width: 4,
-      padding: 3,
-      color: "#eebb00",
-      dasharray: "0",
-    },
-  },
-  edge: {
-    selectable: true,
-    normal: {
-      width: (edge) => edge.width, // Use the value of each edge object
-      color: (edge) => edge.color,
-      dasharray: "0",
-      linecap: "butt",
-      animate: false,
-      animationSpeed: 50,
-    },
-    hover: {
-      width: 4,
-      color: (edge) => edge.color,
-      dasharray: "0",
-      linecap: "butt",
-      animate: false,
-      animationSpeed: 50,
-    },
-    selected: {
-      width: 3,
-      color: (edge) => edge.color,
-      dasharray: "6",
-      linecap: "round",
-      animate: true,
-      animationSpeed: 50,
-    },
-    gap: 3,
-    type: "curve",
-    summarize: false,
-  },
-});
+// ネットワークグラフ描画の初期設定
 const configs = reactive(initialConfigs);
+const nodes: Ref<Record<string, Node>> = ref({});
+const edges:  Ref<Record<string, Edge>> = ref({});
 
-import { EventHandlers } from "v-network-graph";
-const eventHandlers: EventHandlers = {
-  "node:click": ({ node, event }) => {
-    console.log("click");
-    console.log(node);
+// グラフのクリック時のイベント
+const eventHandlers: vNG.EventHandlers = {
+  "edge:pointerover": ({ edge }) => {
+    targetEdgeId.value = edge ?? ""
+    tooltipOpacity.value = 1 // show
+  },
+  "edge:pointerout": _ => {
+    tooltipOpacity.value = 0 // hide
   },
 };
+
+onMounted(async () => {
+  const user = await client.auth.getUser();
+  // 認証されていない時、ログインページにリダイレクト
+  if (!user) {
+    client.auth.signOut();
+    window.location.href = "/login";
+  }
+
+  // 認証されている場合はユーザー情報を取得
+  userId.value = user.data.user?.id!;
+  await fetchMapRelation();
+  
+  // 5秒ごとにデータを取得
+  setInterval(async () => {
+    await fetchMapRelation();
+  }, 10000);
+});
+
+// DBからデータを取得し、ノードとエッジを作成
+const fetchMapRelation = async () => {
+  const { data, error } = await client
+    .from("code_dna_summary")
+    .select(`
+      *,
+      profiles(*)
+  `);
+  
+  let tempData = data;
+
+  // EdegesとNodesを作成
+  data?.map((item: any) => {
+    // ユーザ情報を利用して、ノードを作成
+    const newNode = {
+      [item.profiles.id]: {
+        name: item.profiles.user_name,
+        img: item.profiles.avatar_url,
+      },
+    }
+    nodes.value = { ...nodes.value, ...newNode };
+
+
+    // tempDataからitemを削除
+    tempData = tempData?.filter((other: any) => other.id !== item.id) ?? [];
+
+    // 類似度を計算してエッジを作成
+    tempData?.map((tempDataTarget: any) => {
+      // 絶対値が0.1未満の場合は同じノードとみなす
+      const variable_name_simplicity_rate_diff = Math.abs(item.variable_name_simplicity_rate - tempDataTarget.variable_name_simplicity_rate)
+      if (variable_name_simplicity_rate_diff <= 0.4) {
+        const newEdge = {
+          [`${item.id}-${tempDataTarget}-variable_name_simplicity_rate`]: {
+            name: "変数名の付け方",
+            diff: variable_name_simplicity_rate_diff,
+            source: item.profiles.id,
+            target: tempDataTarget.profiles.id,
+            width: 1,
+            color: "blue",
+          },
+        }
+        edges.value = { ...edges.value, ...newEdge };
+      }
+      const method_splitting_coarseness_rate_diff = Math.abs(item.method_splitting_coarseness_rate - tempDataTarget.method_splitting_coarseness_rate)
+      if(method_splitting_coarseness_rate_diff <= 0.4) {
+        const newEdge = {
+          [`${item.id}-${tempDataTarget}-method_splitting_coarseness_rate`]: {
+            name: "メソッドの分割粒度",
+            diff: method_splitting_coarseness_rate_diff,
+            source: item.profiles.id,
+            target: tempDataTarget.profiles.id,
+            width: 1,
+            color: "red",
+          },
+        }
+        edges.value = { ...edges.value, ...newEdge };
+      }
+      const processing_intent_communicating_rate_diff = Math.abs(item.processing_intent_communicating_rate - tempDataTarget.processing_intent_communicating_rate)
+      if (processing_intent_communicating_rate_diff <= 0.4) {
+        const newEdge = {
+          [`${item.id}-${tempDataTarget}-processing_intent_communicating_rate`]: {
+            name: "処理の意図を伝える手段",
+            diff: processing_intent_communicating_rate_diff,
+            source: item.profiles.id,
+            target: tempDataTarget.profiles.id,
+            width: 1,
+            color: "green",
+          },
+        }
+        edges.value = { ...edges.value, ...newEdge };
+      }
+      const commit_granularity_rate_diff = Math.abs(item.commit_granularity_rate - tempDataTarget.commit_granularity_rate)
+      if (commit_granularity_rate_diff <= 0.4) {
+        const newEdge = {
+          [`${item.id}-${tempDataTarget}-commit_granularity_rate`]: {
+            name: "コミットの粒度",
+            diff: commit_granularity_rate_diff,
+            source: item.profiles.id,
+            target: tempDataTarget.profiles.id,
+            width: 1,
+            color: "yellow",
+          },
+        }
+        edges.value = { ...edges.value, ...newEdge };
+      }
+    });
+  });
+};
+
+// エッジにマウスポインターが乗った時の処理
+const targetEdgeId = ref("")
+const tooltipOpacity = ref(0) // 0 or 1
+const tooltipPos = ref({ left: "0px", top: "0px" })
+const tooltip = ref<HTMLDivElement>()
+const { x, y } = useMouse();
+
+
+// エッジにマウスポインターが乗った時、ポインターを起点としてtooltipを表示
+watch(
+  [tooltipOpacity],
+  () => {
+    // ポインターのxy座標を取得
+    tooltipPos.value = {
+      left: x.value - 100 + "px",
+      top: y.value - 200 + "px",
+    }
+  },
+  { deep: true }
+)
 </script>
 
 <template>
   <ClientOnly>
-    <div class="p-12 max-lg:p-4">
+    <div class="p-12 max-lg:p-4 tooltip-wrapper" >
       <GlowBorder
-        class="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl"
+        class="relative flex h-[80vh] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl"
         :color="['#A07CFE', '#FE8FB5', '#FFBE7B']"
       >
         <v-network-graph
@@ -167,7 +172,6 @@ const eventHandlers: EventHandlers = {
 
           <!-- Replace the node component -->
           <template #override-node="{ nodeId, scale, config, ...slotProps }">
-            <!-- circle for filling background -->
             <circle
               class="face-circle"
               :r="config.radius * scale"
@@ -180,7 +184,7 @@ const eventHandlers: EventHandlers = {
               :y="-config.radius * scale"
               :width="config.radius * scale * 2"
               :height="config.radius * scale * 2"
-              :xlink:href="`./faces/${nodes[nodeId].url}`"
+              :xlink:href="`${nodes[nodeId].img }`"
               clip-path="url(#faceCircle)"
             />
             <circle
@@ -193,7 +197,42 @@ const eventHandlers: EventHandlers = {
             />
           </template>
         </v-network-graph>
+        
+        <!-- Tooltip -->
+        <div
+          ref="tooltip"
+          class="tooltip"
+          :style="{ ...tooltipPos, opacity: tooltipOpacity }"
+        >
+          <div>
+            類似項目: {{ `${edges[targetEdgeId]?.name ?? ""}` }}<br>
+            類似度: {{ `${(edges[targetEdgeId]?.diff * 100).toFixed(1) }` }}%
+          </div>
+        </div>
       </GlowBorder>
     </div>
   </ClientOnly>
 </template>
+
+<style lang="css" scoped>
+.tooltip-wrapper {
+  position: relative;
+}
+.tooltip {
+  top: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  width: 120px;
+  height: 100px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-size: 12px;
+  background-color: #fff0bd;
+  border: 1px solid #ffb950;
+  box-shadow: 2px 2px 2px #aaa;
+  transition: opacity 0.2s linear;
+  pointer-events: none;
+}
+</style>
