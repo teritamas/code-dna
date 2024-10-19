@@ -1,9 +1,19 @@
+<script setup lang="ts">
+const client = useSupabaseClient();
+const userId = ref("");
+
+onMounted(async () => {
+  const user = await client.auth.getUser();
+  // 認証されている場合はユーザー情報を取得
+  userId.value = user.data.user?.id!;
+});
+</script>
 <template>
   <div>
     <main>
       <NuxtPage />
     </main>
-    <app-footer class="app-footer" />
+    <app-footer class="app-footer" :userId="userId" />
   </div>
 </template>
 
