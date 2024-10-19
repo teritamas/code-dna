@@ -10,6 +10,10 @@ const signInWithGithub = async () => {
   });
   if (error) console.log(error);
 };
+const title = ref("ログイン - CodeDNA");
+useHead({
+  title,
+});
 </script>
 <template>
   <div

@@ -22,7 +22,7 @@ const props = defineProps({
 <template>
   <ul class="space-y-4 text-left">
     <li class="items-center space-x-3 rtl:space-x-reverse mt-2">
-      <IconCheck class="flex-shrink-0 w-3.5 fill-green-500 inline" />
+      <IconCheck class="flex-shrink-0 w-3.5 fill-indigo-500 inline" />
       <span class="text-dark-900 font-bold"
         >変数名の付け方</span
       >
@@ -31,7 +31,7 @@ const props = defineProps({
       </span>
     </li>
     <li class="items-center space-x-3 rtl:space-x-reverse mt-2">
-      <IconCheck class="flex-shrink-0 w-3.5 fill-green-500 inline" />
+      <IconCheck class="flex-shrink-0 w-3.5 fill-indigo-500 inline" />
       <span class="text-dark-900 font-bold"
         >クラスやメソッドの分割</span
       >
@@ -40,7 +40,7 @@ const props = defineProps({
       </span>
     </li>
     <li class="items-center space-x-3 rtl:space-x-reverse mt-2">
-      <IconCheck class="flex-shrink-0 w-3.5 fill-green-500 inline" />
+      <IconCheck class="flex-shrink-0 w-3.5 fill-indigo-500 inline" />
       <span class="text-dark-900 font-bold">
         処理の意図を伝える手段
       </span>
@@ -49,7 +49,7 @@ const props = defineProps({
       </span>
     </li>
     <li class="items-center space-x-3 rtl:space-x-reverse mt-2">
-      <IconCheck class="flex-shrink-0 w-3.5 fill-green-500 inline" />
+      <IconCheck class="flex-shrink-0 w-3.5 fill-indigo-500 inline" />
       <span class="text-dark-900 font-bold">
         コミットの粒度
       </span>
