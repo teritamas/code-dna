@@ -2,9 +2,7 @@ from apis.github import get_activity
 from facades.comment_identify_by_gpt import get_by_push_event
 from facades.fetch_git_activity import fetch_by_push_event
 from apis.supabase import fetch_by_in_progress_status, update_status_by_error, update_by_completed_status
-
-
-MAX_PUSH_EVENT_FILE_COUNT = 30  # 最大100ファイルまで分析
+from config import MAX_PUSH_EVENT_FILE_COUNT
 
 
 def main(profile_id, owner, token):
