@@ -6,6 +6,8 @@ def fetch_by_push_event(gh_activity, headers, max_file_count: 100):
     print(f"Pushイベント数: {len(push_events)}")
     # 最新のPushEventのリポジトリ名を取得する
     change_files = ""
+    push_events.sort(key=lambda x: x["created_at"], reverse=True)
+    print(f"最新のPushEvent: {push_events[0]['created_at']}")
 
     file_count = 0
     for event in push_events:

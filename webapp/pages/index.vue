@@ -3,7 +3,7 @@ import DnaSummaryCreateStatus from "@/types/dna_summary_create_status";
 
 const client = useSupabaseClient();
 const userId = ref("");
-const userEmail = ref("");
+const userName = ref("");
 const analyticsData = ref({});
 const analyticsStatus = ref(DnaSummaryCreateStatus.NotYet);
 
@@ -18,14 +18,15 @@ onMounted(async () => {
 
   // 認証されている場合はユーザー情報を取得
   userId.value = user.data.user?.id!;
-  userEmail.value = user.data.user?.email!; // ユーザーのメールアドレスを取得
+  userName.value = user.data.user?.user_metadata?.full_name!;
 
   analyticsStatus.value = await fetchAnalysisStatus();
-  console.log(analyticsStatus.value);
 
   if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
     // 診断が未実施の場合は、診断を実行
     analyticsData.value = await fetchAnalysisData();
+  } else if (analyticsStatus.value === DnaSummaryCreateStatus.InProgress) {
+    await fetchStatusUntilInProgress();
   }
 });
 
@@ -37,12 +38,12 @@ const fetchAnalysisStatus = async () => {
 
   if (error) {
     console.error(error);
-    return DnaSummaryCreateStatus.NotYet;
+    return DnaSummaryCreateStatus.Failed;
   }
 
   if (data.length === 0) {
     // プロフィールが存在しない場合は新規作成
-    return DnaSummaryCreateStatus.NotYet;
+    return DnaSummaryCreateStatus.Failed;
   }
 
   // enumのDnaSummaryCreateStatusに変換
@@ -56,14 +57,14 @@ const fetchAnalysisData = async () => {
     .select()
     .eq("profile_id", userId.value);
 
-  console.log(data);
   if (error) {
     console.error(error);
+    analyticsData.value = DnaSummaryCreateStatus.Failed;
     return {};
   }
 
   if (data.length === 0) {
-    // プロフィールが存在しない場合は新規作成
+    analyticsData.value = DnaSummaryCreateStatus.Failed;
     return {};
   }
 
@@ -87,18 +88,20 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
 
   analyticsStatus.value = await fetchAnalysisStatus();
 
+  await fetchStatusUntilInProgress();
+};
+
+const fetchStatusUntilInProgress = async () => {
   const interval = setInterval(async () => {
     analyticsStatus.value = await fetchAnalysisStatus();
     if (analyticsStatus.value !== DnaSummaryCreateStatus.InProgress) {
+      // 解析が完了した場合はデータを取得
+      if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
+        analyticsData.value = await fetchAnalysisData();
+      }
       clearInterval(interval);
     }
   }, 5000);
-
-  if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
-    // 診断が未実施の場合は、診断を実行
-    console.log("さいご");
-    analyticsData.value = await fetchAnalysisData();
-  }
 };
 
 const title = ref("解析 - CodeDNA");
@@ -158,7 +161,10 @@ useHead({
         class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32"
       >
         <div class="text-center">
-          <p class="mb-2">{{ userEmail }}さんは</p>
+          <p class="mb-2">
+            <span class="font-bold text-xl"> {{ userName }}</span>
+            さんは
+          </p>
           <blur-reveal :delay="0.2" :duration="0.75">
             <h1
               class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
@@ -192,17 +198,20 @@ useHead({
           <IconBookmark class="w-6 fill-indigo-700 inline" />
           特長
         </h2>
-        <section-feature />
-        <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconCrown class="w-7 fill-yellow-400 inline" />
-          強み
-        </h2>
-        <section-strong />
-        <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconValue class="w-7 fill-purple-400 inline" />
-          開発の場面でのあなたの価値
-        </h2>
-        <section-value class="mt-2" />
+        <section-feature
+          :variableNameSimplicityRateReason="
+            analyticsData.variable_name_simplicity_rate_reason
+          "
+          :methodSplittingCoarsenessRateReason="
+            analyticsData.method_splitting_coarseness_rate_reason
+          "
+          :processingIntentCommunicatingRateReason="
+            analyticsData.processing_intent_communicating_rate_reason
+          "
+          :commitGranularityRateReason="
+            analyticsData.commit_granularity_rate_reason
+          "
+        />
       </div>
       <section-error v-if="analyticsStatus === DnaSummaryCreateStatus.Failed" />
       <div

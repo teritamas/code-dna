@@ -3,7 +3,17 @@
     <h2
       class="text-3xl text-center p-2 font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
     >
-      解析中です...
+      <FlipWords
+        :words="[
+          '解析中です...',
+          'データを収集しています',
+          'もっと収集しています',
+          '解析中です...',
+          '頑張っています',
+          'もう少し時間かかります😣',
+        ]"
+        :duration="5000"
+      />
     </h2>
   </blur-reveal>
   <div class="loader"></div>

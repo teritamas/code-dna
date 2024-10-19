@@ -37,6 +37,10 @@ def update_by_completed_status(profile_id: str, response: GptIdentityResponse):
                 "method_splitting_coarseness_rate": response.method_splitting_coarseness_rate.rate,
                 "processing_intent_communicating_rate": response.processing_intent_communicating_rate.rate,
                 "commit_granularity_rate": response.commit_granularity_rate.rate,
+                "variable_name_simplicity_rate_reason": response.variable_name_simplicity_rate.reason,
+                "method_splitting_coarseness_rate_reason": response.method_splitting_coarseness_rate.reason,
+                "processing_intent_communicating_rate_reason": response.processing_intent_communicating_rate.reason,
+                "commit_granularity_rate_reason": response.commit_granularity_rate.reason,
                 "summary_comment": response.summary_comment,
                 "identity_name": response.identity_name,
             }
