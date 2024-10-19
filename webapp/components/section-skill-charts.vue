@@ -1,3 +1,25 @@
+<script setup lang="ts">
+
+// propsを受け取る
+const props = defineProps({
+    variableNameSimplicityRate: {
+      type: Number,
+      required: true,
+    },
+    methodSplittingCoarsenessRate: {
+      type: Number,
+      required: true,
+    },
+    processingIntentCommunicatingRate: {
+      type: Number,
+      required: true,
+    },
+    commitGranularityRate: {
+      type: Number,
+      required: true,
+    },
+  });
+</script>
 <template>
   <div class="mb-1">
     <span class="text-base font-medium text-blue-700 dark:text-blue-500"
@@ -6,7 +28,7 @@
     簡潔だが意図は明確
   </div>
   <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
-    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
+    <div class="bg-blue-600 h-2.5 rounded-full" :style="{width: props.variableNameSimplicityRate * 100 + '%'}"></div>
   </div>
   <div class="mb-1">
     <span class="text-base font-medium text-red-700 dark:text-red-500"
@@ -17,7 +39,7 @@
   <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
     <div
       class="bg-red-600 h-2.5 rounded-full dark:bg-red-500"
-      style="width: 80%"
+      :style="{width: props.methodSplittingCoarsenessRate * 100 + '%'}"
     ></div>
   </div>
   <div class="mb-1">
@@ -29,7 +51,7 @@
   <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
     <div
       class="bg-green-600 h-2.5 rounded-full dark:bg-green-500"
-      style="width: 70%"
+      :style="{width: props.processingIntentCommunicatingRate * 100 + '%'}"
     ></div>
   </div>
   <div class="mb-1">
@@ -39,6 +61,8 @@
     作業単位（クラス作成、メソッド作成するたびにコミットする）
   </div>
   <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
-    <div class="bg-yellow-400 h-2.5 rounded-full" style="width: 45%"></div>
+    <div class="bg-yellow-400 h-2.5 rounded-full" 
+      :style="{width: props.commitGranularityRate * 100 + '%'}"
+    ></div>
   </div>
 </template>

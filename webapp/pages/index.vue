@@ -4,6 +4,7 @@ import DnaSummaryCreateStatus from "@/types/dna_summary_create_status";
 const client = useSupabaseClient();
 const userId = ref("");
 const userEmail = ref("");
+const analyticsData = ref({});
 
 onMounted(async () => {
   const user = await client.auth.getUser();
@@ -18,9 +19,32 @@ onMounted(async () => {
   userId.value = user.data.user?.id!;
   userEmail.value = user.data.user?.email!; // ユーザーのメールアドレスを取得
 
+  analyticsData.value = await fetchAnalysisData();
+
   // TODO: 暫定処理でログインと同時に取得する。本来はユーザが「診断する」ボタンをクリックした時に実行する
   await syncGithubProviderTokenAndUpdateStatus();
 });
+
+
+const fetchAnalysisData = async () => {
+  const { data, error } = await client
+    .from("code_dna_summary")
+    .select()
+    .eq("profile_id", userId.value);
+
+  console.log(data);
+  if (error) {
+    console.error(error);
+    return {};
+  }
+
+  if (data.length === 0) {
+    // プロフィールが存在しない場合は新規作成
+    return {};
+  }
+
+  return data[0];
+};
 
 const syncGithubProviderTokenAndUpdateStatus = async () => {
   // Githubのアクセストークンを取得
@@ -97,10 +121,10 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
           <h1
             class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
           >
-            直感的な解説者
+            {{ analyticsData.identity_name }}
           </h1>
           <p class="mt-6 text-lg leading-8 text-gray-600">
-            大きな視点でシンプルな設計を行い、必要に応じてコメントで説明。進捗をこまめに記録し、柔軟に対応するエンジニアです。
+            {{ analyticsData.summary_comment }}
           </p>
         </div>
         <h2 class="mt-5 text-3xl font-bold dark:text-white">
@@ -108,7 +132,12 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
           アイデンティティチャート
         </h2>
         <div class="p-5">
-          <section-skill-charts />
+          <section-skill-charts
+            :variableNameSimplicityRate="analyticsData.variable_name_simplicity_rate"
+            :methodSplittingCoarsenessRate="analyticsData.method_splitting_coarseness_rate"
+            :processingIntentCommunicatingRate="analyticsData.processing_intent_communicating_rate"
+            :commitGranularityRate="analyticsData.commit_granularity_rate"
+          />
         </div>
         <h2 class="mt-5 text-3xl font-bold dark:text-white">
           <IconBookmark class="w-6 fill-green-700 inline" />
