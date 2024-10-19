@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nuxtjs/supabase": "^1.4.1",
+    "flowbite": "^2.5.2",
     "nuxt": "^3.13.2",
     "vue": "latest",
     "vue-router": "latest"
