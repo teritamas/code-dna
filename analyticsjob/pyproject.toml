@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "analyticsjob"
+version = "0.1.0"
+description = ""
+authors = ["sey323 <sey323_nm@yahoo.co.jp>"]
+readme = "README.md"
+packages = [{include = "analyticsjob"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.32.3"
+openai = "^1.52.0"
+supabase = "^2.9.1"
+python-dotenv = "^1.0.1"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
