@@ -8,4 +8,10 @@ export default defineNuxtConfig({
       redirectHost: process.env.REDIRECT_HOST, // リダイレクト先の ホスト名の設定
     },
   },
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 });
