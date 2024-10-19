@@ -61,9 +61,18 @@ def get_by_push_event(change_files: str) -> GptIdentityResponse:
     except Exception as e:
         print(f"An error occurred: {e}")
         parsed_data = GptIdentityResponse(
-            variable_name_simplicity_rate={"rate": 0.5, "reason": "解析できませんでした"},
-            method_splitting_coarseness_rate={"rate": 0.5, "reason": "解析できませんでした"},
-            processing_intent_communicating_rate={"rate": 0.5, "reason": "解析できませんでした"},
+            variable_name_simplicity_rate={
+                "rate": 0.5,
+                "reason": "解析できませんでした",
+            },
+            method_splitting_coarseness_rate={
+                "rate": 0.5,
+                "reason": "解析できませんでした",
+            },
+            processing_intent_communicating_rate={
+                "rate": 0.5,
+                "reason": "解析できませんでした",
+            },
             commit_granularity_rate={"rate": 0.5, "reason": "解析できませんでした"},
             summary_comment="解析できませんでした",
             identity_name="解析できませんでした",
