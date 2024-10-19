@@ -70,6 +70,7 @@ const fetchMapRelation = async () => {
     const newNode = {
       [item.profiles.id]: {
         name: item.profiles.user_name,
+        identity_name: item.identity_name,
         img: item.profiles.avatar_url,
       },
     };
@@ -144,7 +145,7 @@ const fetchMapRelation = async () => {
             source: item.profiles.id,
             target: tempDataTarget.profiles.id,
             width: 1,
-            color: "yellow",
+            color: "rgb(202 138 4)",
           },
         };
         edges.value = { ...edges.value, ...newEdge };
@@ -172,7 +173,7 @@ watch(
     // ポインターのxy座標を取得
     tooltipPos.value = {
       left: x.value - 100 + "px",
-      top: y.value - 200 + "px",
+      top: y.value - 0 + "px",
     };
   },
   { deep: true }
@@ -229,22 +230,26 @@ watch(
         <!-- NodeのTooltip -->
         <div
           ref="nodeTooltip"
-          class="nodeTooltip"
+          class="text-center absolute z-10 inline-block px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm dark:bg-gray-700"
           :style="{ ...tooltipPos, opacity: nodeTooltipOpacity }"
         >
-          <div>類似項目: {{ `${nodes[targetNodeId]}` }}<br /></div>
+          <div>
+            {{ `${nodes[targetNodeId]?.name ?? ""}` }}<br />{{
+              `${nodes[targetNodeId]?.identity_name ?? ""}`
+            }}
+          </div>
         </div>
 
         <!-- EdgeのTooltip -->
         <div
           ref="edgeTooltip"
-          class="edgeTooltip"
           :style="{ ...tooltipPos, opacity: edgeTooltipOpacity }"
+          role="tooltip"
+          class="edgeTooltip rounded-lg shadow-sm"
         >
-          <div>
-            類似項目: {{ `${edges[targetEdgeId]?.name ?? ""}` }}<br />
-            類似度: {{ `${(edges[targetEdgeId]?.diff * 100).toFixed(1)}` }}%
-          </div>
+          {{ `${edges[targetEdgeId]?.name ?? ""}` }}<br />
+          類似度: {{ `${((1 - edges[targetEdgeId]?.diff) * 100).toFixed(1)}` }}%
+          <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
       </GlowBorder>
     </div>
@@ -260,17 +265,17 @@ watch(
   left: 0;
   opacity: 0;
   position: absolute;
-  width: 120px;
-  height: 100px;
   display: grid;
   place-content: center;
   text-align: center;
   font-size: 12px;
-  background-color: #fff0bd;
-  border: 1px solid #ffb950;
+  background-color: #fcfcfc;
+  border: 1px solid #c7c7c7;
   box-shadow: 2px 2px 2px #aaa;
   transition: opacity 0.2s linear;
   pointer-events: none;
+  padding: 0.5rem 0.25rem;
+  color: rgb(32, 32, 32);
 }
 .nodeTooltip {
   top: 0;
