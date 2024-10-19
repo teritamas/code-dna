@@ -13,12 +13,19 @@ const edges:  Ref<Record<string, Edge>> = ref({});
 
 // グラフのクリック時のイベント
 const eventHandlers: vNG.EventHandlers = {
+  "node:pointerover": ({ node }) => {
+    targetNodeId.value = node
+    nodeTooltipOpacity.value = 1 // show
+  },
+  "node:pointerout": _ => {
+    nodeTooltipOpacity.value = 0 // hide
+  },
   "edge:pointerover": ({ edge }) => {
     targetEdgeId.value = edge ?? ""
-    tooltipOpacity.value = 1 // show
+    edgeTooltipOpacity.value = 1 // show
   },
   "edge:pointerout": _ => {
-    tooltipOpacity.value = 0 // hide
+    edgeTooltipOpacity.value = 0 // hide
   },
 };
 
@@ -51,7 +58,7 @@ const fetchMapRelation = async () => {
   
   let tempData = data;
 
-  // EdegesとNodesを作成
+  // EdgesとNodesを作成
   data?.map((item: any) => {
     // ユーザ情報を利用して、ノードを作成
     const newNode = {
@@ -130,16 +137,20 @@ const fetchMapRelation = async () => {
 };
 
 // エッジにマウスポインターが乗った時の処理
-const targetEdgeId = ref("")
-const tooltipOpacity = ref(0) // 0 or 1
 const tooltipPos = ref({ left: "0px", top: "0px" })
-const tooltip = ref<HTMLDivElement>()
-const { x, y } = useMouse();
+const targetEdgeId = ref("")
+const edgeTooltipOpacity = ref(0) // 0 or 1
+const edgeTooltip = ref<HTMLDivElement>()
 
+const targetNodeId = ref<string>("")
+const nodeTooltipOpacity = ref(0) // 0 or 1
+const nodeTooltip = ref<HTMLDivElement>()
+
+const { x, y } = useMouse();
 
 // エッジにマウスポインターが乗った時、ポインターを起点としてtooltipを表示
 watch(
-  [tooltipOpacity],
+  [edgeTooltipOpacity, nodeTooltipOpacity],
   () => {
     // ポインターのxy座標を取得
     tooltipPos.value = {
@@ -197,12 +208,23 @@ watch(
             />
           </template>
         </v-network-graph>
-        
-        <!-- Tooltip -->
+
+        <!-- NodeのTooltip -->
         <div
-          ref="tooltip"
-          class="tooltip"
-          :style="{ ...tooltipPos, opacity: tooltipOpacity }"
+          ref="nodeTooltip"
+          class="nodeTooltip"
+          :style="{ ...tooltipPos, opacity: nodeTooltipOpacity }"
+        >
+          <div>
+            類似項目: {{ `${nodes[targetNodeId]}` }}<br>
+          </div>
+        </div>
+
+        <!-- EdgeのTooltip -->
+        <div
+          ref="edgeTooltip"
+          class="edgeTooltip"
+          :style="{ ...tooltipPos, opacity: edgeTooltipOpacity }"
         >
           <div>
             類似項目: {{ `${edges[targetEdgeId]?.name ?? ""}` }}<br>
@@ -218,7 +240,24 @@ watch(
 .tooltip-wrapper {
   position: relative;
 }
-.tooltip {
+.edgeTooltip {
+  top: 0;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  width: 120px;
+  height: 100px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  font-size: 12px;
+  background-color: #fff0bd;
+  border: 1px solid #ffb950;
+  box-shadow: 2px 2px 2px #aaa;
+  transition: opacity 0.2s linear;
+  pointer-events: none;
+}
+.nodeTooltip {
   top: 0;
   left: 0;
   opacity: 0;
