@@ -1,7 +1,7 @@
 <template>
   <footer class="bg-white dark:bg-gray-800 w-screen py-4">
     <div class="max-w-screen-xl px-4 mx-auto">
-      <div class="flex max-w-xs mx-auto items-center justify-between">
+      <div class="flex max-w-md mx-auto items-center justify-between">
         <routerLink
           to="/map"
           class="flex items-center justify-center text-gray-400 transition-colors duration-200 hover:text-gray-800 dark:hover:text-200"
@@ -37,8 +37,23 @@
           </svg>
           <p class="ml-2 text-sm">解析する</p>
         </routerLink>
+        <div
+          v-if="userId"
+          @click="emits('signOut')"
+          class="flex items-center justify-center text-gray-400 transition-colors duration-200 hover:text-gray-800 dark:hover:text-200 cursor-pointer"
+        >
+          <svg
+            width="20"
+            height="20"
+            fill="currentColor"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 496 512"
+          >
+              <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
+          <p class="ml-2 text-sm">サインアウトする</p>
+        </div>
         <routerLink
-          v-if="!userId"
+          v-else
           to="/login"
           class="flex items-center justify-center text-gray-400 transition-colors duration-200 hover:text-gray-800 dark:hover:text-200"
         >
@@ -67,4 +82,6 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emits = defineEmits(["signOut"]);
 </script>

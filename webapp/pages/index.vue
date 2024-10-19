@@ -104,7 +104,6 @@ const fetchStatusUntilInProgress = async () => {
     }
   }, 5000);
 };
-
 </script>
 <template>
   <div class="bg-white">

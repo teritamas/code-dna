@@ -7,13 +7,19 @@ onMounted(async () => {
   // 認証されている場合はユーザー情報を取得
   userId.value = user.data.user?.id!;
 });
+
+const signOut = async () => {
+  await client.auth.signOut();
+  userId.value = "";
+  window.location.href = "/login";
+};
 </script>
 <template>
   <div>
     <main>
       <NuxtPage />
     </main>
-    <app-footer class="app-footer" :userId="userId" />
+    <app-footer class="app-footer" :userId="userId" @signOut="signOut" />
   </div>
 </template>
 
