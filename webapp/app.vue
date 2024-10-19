@@ -9,9 +9,8 @@
 
 <style scoped>
 main {
-  margin-top: 20px; /* ヘッダーの高さ分だけマージンを設定 */
   margin-bottom: 60px; /* ヘッダーの高さ分だけマージンを設定 */
-  padding-top: 40px;
+  padding-top: 20px;
   min-height: 88vh;
 }
 
