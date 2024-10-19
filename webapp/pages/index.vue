@@ -99,6 +99,36 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
     analyticsData.value = await fetchAnalysisData();
   }
 };
+
+const syncGithubProviderTokenAndUpdateStatus = async () => {
+  // Githubのアクセストークンを取得
+  const session = await client.auth.getSession();
+  const providerToken = session.data.session?.provider_token;
+
+  // DBに更新リクエストを登録
+  const { data, error } = await client
+    .from("profiles")
+    .update({
+      github_provider_token: providerToken,
+      dna_summary_create_status: DnaSummaryCreateStatus.InProgress,
+    } as never)
+    .eq("id", userId.value)
+    .select();
+
+  analyticsStatus.value = await fetchAnalysisStatus();
+
+  const interval = setInterval(async () => {
+    analyticsStatus.value = await fetchAnalysisStatus();
+    if (analyticsStatus.value !== DnaSummaryCreateStatus.InProgress) {
+      clearInterval(interval);
+    }
+  }, 5000);
+
+  if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
+    // 診断が未実施の場合は、診断を実行
+    analyticsData.value = await fetchAnalysisData();
+  }
+};
 </script>
 <template>
   <div class="bg-white">
