@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   modules: ["@nuxtjs/supabase"],
+  css: ["~/assets/css/main.css"],
   supabase: {
     key: process.env.SUPABASE_ANON_KEY, // Supabase の API Keyの設定
   },
