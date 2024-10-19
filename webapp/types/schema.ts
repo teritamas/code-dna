@@ -82,18 +82,21 @@ export type Database = {
         Row: {
           avatar_url: string | null
           dna_summary_create_status: number | null
+          github_provider_token: string | null
           id: string
           user_name: string | null
         }
         Insert: {
           avatar_url?: string | null
           dna_summary_create_status?: number | null
+          github_provider_token?: string | null
           id: string
           user_name?: string | null
         }
         Update: {
           avatar_url?: string | null
           dna_summary_create_status?: number | null
+          github_provider_token?: string | null
           id?: string
           user_name?: string | null
         }
