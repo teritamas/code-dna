@@ -57,7 +57,6 @@ const fetchAnalysisData = async () => {
     .select()
     .eq("profile_id", userId.value);
 
-  console.log(data);
   if (error) {
     console.error(error);
     analyticsData.value = DnaSummaryCreateStatus.Failed;
