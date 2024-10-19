@@ -3,7 +3,7 @@ import DnaSummaryCreateStatus from "@/types/dna_summary_create_status";
 
 const client = useSupabaseClient();
 const userId = ref("");
-const userEmail = ref("");
+const userName = ref("");
 const analyticsData = ref({});
 const analyticsStatus = ref(DnaSummaryCreateStatus.NotYet);
 
@@ -18,7 +18,7 @@ onMounted(async () => {
 
   // 認証されている場合はユーザー情報を取得
   userId.value = user.data.user?.id!;
-  userEmail.value = user.data.user?.email!; // ユーザーのメールアドレスを取得
+  userName.value = user.data.user?.user_metadata?.full_name!;
 
   analyticsStatus.value = await fetchAnalysisStatus();
 
@@ -161,7 +161,7 @@ const fetchStatusUntilInProgress = async () => {
         class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32"
       >
         <div class="text-center">
-          <p>{{ userEmail }}さんは</p>
+          <p>{{ userName }}さんは</p>
           <h1
             class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
           >
