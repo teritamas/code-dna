@@ -144,6 +144,10 @@ const eventHandlers: EventHandlers = {
     console.log(node);
   },
 };
+const title = ref("マップ - CodeDNA");
+useHead({
+  title,
+});
 </script>
 
 <template>

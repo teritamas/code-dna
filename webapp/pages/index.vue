@@ -96,39 +96,16 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
 
   if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
     // 診断が未実施の場合は、診断を実行
+    console.log("さいご");
     analyticsData.value = await fetchAnalysisData();
   }
 };
 
-const syncGithubProviderTokenAndUpdateStatus = async () => {
-  // Githubのアクセストークンを取得
-  const session = await client.auth.getSession();
-  const providerToken = session.data.session?.provider_token;
+const title = ref("解析 - CodeDNA");
 
-  // DBに更新リクエストを登録
-  const { data, error } = await client
-    .from("profiles")
-    .update({
-      github_provider_token: providerToken,
-      dna_summary_create_status: DnaSummaryCreateStatus.InProgress,
-    } as never)
-    .eq("id", userId.value)
-    .select();
-
-  analyticsStatus.value = await fetchAnalysisStatus();
-
-  const interval = setInterval(async () => {
-    analyticsStatus.value = await fetchAnalysisStatus();
-    if (analyticsStatus.value !== DnaSummaryCreateStatus.InProgress) {
-      clearInterval(interval);
-    }
-  }, 5000);
-
-  if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
-    // 診断が未実施の場合は、診断を実行
-    analyticsData.value = await fetchAnalysisData();
-  }
-};
+useHead({
+  title,
+});
 </script>
 <template>
   <div class="bg-white">
@@ -165,11 +142,7 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
         v-if="analyticsStatus === DnaSummaryCreateStatus.NotYet"
         class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32"
       >
-        <section-analysis
-          @syncGithubProviderTokenAndUpdateStatus="
-            syncGithubProviderTokenAndUpdateStatus
-          "
-        />
+        <section-analysis />
       </div>
       <div
         v-else-if="analyticsStatus === DnaSummaryCreateStatus.InProgress"
@@ -185,18 +158,20 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
         class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32"
       >
         <div class="text-center">
-          <p>{{ userEmail }}さんは</p>
-          <h1
-            class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
-          >
-            {{ analyticsData.identity_name }}
-          </h1>
-          <p class="mt-6 text-lg leading-8 text-gray-600">
-            {{ analyticsData.summary_comment }}
-          </p>
+          <p class="mb-2">{{ userEmail }}さんは</p>
+          <blur-reveal :delay="0.2" :duration="0.75">
+            <h1
+              class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
+            >
+              {{ analyticsData.identity_name }}
+            </h1>
+            <p class="mt-6 text-lg leading-8 text-gray-600">
+              {{ analyticsData.summary_comment }}
+            </p>
+          </blur-reveal>
         </div>
         <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconChartBar class="w-6 fill-red-700 inline" />
+          <IconChartBar class="w-6 fill-purple-700 inline" />
           アイデンティティチャート
         </h2>
         <div class="p-5">
@@ -214,7 +189,7 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
           />
         </div>
         <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconBookmark class="w-6 fill-green-700 inline" />
+          <IconBookmark class="w-6 fill-indigo-700 inline" />
           特長
         </h2>
         <section-feature />
