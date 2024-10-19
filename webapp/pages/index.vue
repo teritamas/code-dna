@@ -96,7 +96,6 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
 
   if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
     // 診断が未実施の場合は、診断を実行
-    console.log("さいご");
     analyticsData.value = await fetchAnalysisData();
   }
 };
