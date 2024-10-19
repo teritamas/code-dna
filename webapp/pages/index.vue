@@ -103,6 +103,12 @@ const fetchStatusUntilInProgress = async () => {
     }
   }, 5000);
 };
+
+const title = ref("解析 - CodeDNA");
+
+useHead({
+  title,
+});
 </script>
 <template>
   <div class="bg-white">
@@ -139,11 +145,7 @@ const fetchStatusUntilInProgress = async () => {
         v-if="analyticsStatus === DnaSummaryCreateStatus.NotYet"
         class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32"
       >
-        <section-analysis
-          @syncGithubProviderTokenAndUpdateStatus="
-            syncGithubProviderTokenAndUpdateStatus
-          "
-        />
+        <section-analysis />
       </div>
       <div
         v-else-if="analyticsStatus === DnaSummaryCreateStatus.InProgress"
@@ -159,18 +161,23 @@ const fetchStatusUntilInProgress = async () => {
         class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32"
       >
         <div class="text-center">
-          <p>{{ userName }}さんは</p>
-          <h1
-            class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
-          >
-            {{ analyticsData.identity_name }}
-          </h1>
-          <p class="mt-6 text-lg leading-8 text-gray-600">
-            {{ analyticsData.summary_comment }}
+          <p class="mb-2">
+            <span class="font-bold text-xl"> {{ userName }}</span>
+            さんは
           </p>
+          <blur-reveal :delay="0.2" :duration="0.75">
+            <h1
+              class="text-balance text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl"
+            >
+              {{ analyticsData.identity_name }}
+            </h1>
+            <p class="mt-6 text-lg leading-8 text-gray-600">
+              {{ analyticsData.summary_comment }}
+            </p>
+          </blur-reveal>
         </div>
         <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconChartBar class="w-6 fill-red-700 inline" />
+          <IconChartBar class="w-6 fill-purple-700 inline" />
           アイデンティティチャート
         </h2>
         <div class="p-5">
@@ -188,10 +195,10 @@ const fetchStatusUntilInProgress = async () => {
           />
         </div>
         <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconBookmark class="w-6 fill-green-700 inline" />
+          <IconBookmark class="w-6 fill-indigo-700 inline" />
           特長
         </h2>
-        <section-feature 
+        <section-feature
           :variableNameSimplicityRateReason="
             analyticsData.variable_name_simplicity_rate_reason
           "
@@ -201,7 +208,9 @@ const fetchStatusUntilInProgress = async () => {
           :processingIntentCommunicatingRateReason="
             analyticsData.processing_intent_communicating_rate_reason
           "
-          :commitGranularityRateReason="analyticsData.commit_granularity_rate_reason"
+          :commitGranularityRateReason="
+            analyticsData.commit_granularity_rate_reason
+          "
         />
       </div>
       <section-error v-if="analyticsStatus === DnaSummaryCreateStatus.Failed" />
