@@ -21,11 +21,12 @@ onMounted(async () => {
   userEmail.value = user.data.user?.email!; // ユーザーのメールアドレスを取得
 
   analyticsStatus.value = await fetchAnalysisStatus();
-  console.log(analyticsStatus.value);
 
   if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
     // 診断が未実施の場合は、診断を実行
     analyticsData.value = await fetchAnalysisData();
+  } else if (analyticsStatus.value === DnaSummaryCreateStatus.InProgress) {
+    await fetchStatusUntilInProgress();
   }
 });
 
@@ -37,12 +38,12 @@ const fetchAnalysisStatus = async () => {
 
   if (error) {
     console.error(error);
-    return DnaSummaryCreateStatus.NotYet;
+    return DnaSummaryCreateStatus.Failed;
   }
 
   if (data.length === 0) {
     // プロフィールが存在しない場合は新規作成
-    return DnaSummaryCreateStatus.NotYet;
+    return DnaSummaryCreateStatus.Failed;
   }
 
   // enumのDnaSummaryCreateStatusに変換
@@ -59,11 +60,12 @@ const fetchAnalysisData = async () => {
   console.log(data);
   if (error) {
     console.error(error);
+    analyticsData.value = DnaSummaryCreateStatus.Failed;
     return {};
   }
 
   if (data.length === 0) {
-    // プロフィールが存在しない場合は新規作成
+    analyticsData.value = DnaSummaryCreateStatus.Failed;
     return {};
   }
 
@@ -87,6 +89,10 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
 
   analyticsStatus.value = await fetchAnalysisStatus();
 
+  await fetchStatusUntilInProgress();
+};
+
+const fetchStatusUntilInProgress = async () => {
   const interval = setInterval(async () => {
     analyticsStatus.value = await fetchAnalysisStatus();
     if (analyticsStatus.value !== DnaSummaryCreateStatus.InProgress) {
@@ -96,10 +102,10 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
 
   if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
     // 診断が未実施の場合は、診断を実行
-    console.log("さいご");
     analyticsData.value = await fetchAnalysisData();
   }
 };
+
 </script>
 <template>
   <div class="bg-white">
@@ -189,16 +195,6 @@ const syncGithubProviderTokenAndUpdateStatus = async () => {
           特長
         </h2>
         <section-feature />
-        <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconCrown class="w-7 fill-yellow-400 inline" />
-          強み
-        </h2>
-        <section-strong />
-        <h2 class="mt-5 text-3xl font-bold dark:text-white">
-          <IconValue class="w-7 fill-purple-400 inline" />
-          開発の場面でのあなたの価値
-        </h2>
-        <section-value class="mt-2" />
       </div>
       <section-error v-if="analyticsStatus === DnaSummaryCreateStatus.Failed" />
       <div
