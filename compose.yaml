@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  analyticsjob:
+    build:
+      context: ./analyticsjob
+      dockerfile: Dockerfile
+    container_name: analyticsjob
+    volumes:
+      - ./.env:/app/.env:ro

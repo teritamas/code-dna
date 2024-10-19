@@ -1,13 +1,8 @@
-from os import environ
-from dotenv import load_dotenv
 from supabase import create_client, Client
 from models.gpt_identity_response import GptIdentityResponse
+from config import SUPABASE_URL, SUPABASE_ANON_KEY
 
-load_dotenv(verbose=True)
-
-url: str = environ.get("SUPABASE_URL")
-key: str = environ.get("SUPABASE_ANON_KEY")
-supabase: Client = create_client(url, key)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
 # 処理待ち(dna_summary_create_status=1)のユーザを取得

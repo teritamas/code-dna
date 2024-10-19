@@ -31,6 +31,7 @@ def main(profile_id, owner, token):
 
 # main関数
 if __name__ == "__main__":
+    print("処理を開始します")
     users = fetch_by_in_progress_status()
     print(f"処理待ちのユーザ数: {len(users)}")
 
