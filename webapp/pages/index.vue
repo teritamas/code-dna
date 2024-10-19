@@ -96,14 +96,13 @@ const fetchStatusUntilInProgress = async () => {
   const interval = setInterval(async () => {
     analyticsStatus.value = await fetchAnalysisStatus();
     if (analyticsStatus.value !== DnaSummaryCreateStatus.InProgress) {
+      // 解析が完了した場合はデータを取得
+      if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
+        analyticsData.value = await fetchAnalysisData();
+      }
       clearInterval(interval);
     }
   }, 5000);
-
-  if (analyticsStatus.value === DnaSummaryCreateStatus.Completed) {
-    // 診断が未実施の場合は、診断を実行
-    analyticsData.value = await fetchAnalysisData();
-  }
 };
 
 </script>
