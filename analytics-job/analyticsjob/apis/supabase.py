@@ -16,7 +16,7 @@ def fetch_by_in_progress_status():
     return response.data
 
 
-# ユーザのステータスーを処理中(dna_summary_create_status=3)に更新
+# ユーザのステータスーをエラー(dna_summary_create_status=3)に更新
 def update_status_by_error(profile_id: str):
     _ = (
         supabase.table("profiles")
@@ -24,7 +24,7 @@ def update_status_by_error(profile_id: str):
         .eq("id", profile_id)
         .execute()
     )
-    print(f"ステータスを処理中に更新しました.: {profile_id}")
+    print(f"ステータスをエラーに更新しました.: {profile_id}")
 
 
 # 処理が完了したらDBのステータスを更新
