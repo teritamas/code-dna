@@ -16,11 +16,11 @@ def fetch_by_in_progress_status():
     return response.data
 
 
-# ユーザのステータスーを処理中(dna_summary_create_status=2)に更新
-def update_status_by_processing(profile_id: str):
+# ユーザのステータスーを処理中(dna_summary_create_status=3)に更新
+def update_status_by_error(profile_id: str):
     _ = (
         supabase.table("profiles")
-        .update({"dna_summary_create_status": 2})
+        .update({"dna_summary_create_status": 3})
         .eq("id", profile_id)
         .execute()
     )
@@ -47,7 +47,7 @@ def update_by_completed_status(profile_id: str, response: GptIdentityResponse):
     # profileのステータスを更新
     _ = (
         supabase.table("profiles")
-        .update({"dna_summary_create_status": 3})
+        .update({"dna_summary_create_status": 2})
         .eq("id", profile_id)
         .execute()
     )
