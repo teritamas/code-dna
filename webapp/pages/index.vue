@@ -193,7 +193,18 @@ const fetchStatusUntilInProgress = async () => {
           <IconBookmark class="w-6 fill-green-700 inline" />
           特長
         </h2>
-        <section-feature />
+        <section-feature 
+          :variableNameSimplicityRateReason="
+            analyticsData.variable_name_simplicity_rate_reason
+          "
+          :methodSplittingCoarsenessRateReason="
+            analyticsData.method_splitting_coarseness_rate_reason
+          "
+          :processingIntentCommunicatingRateReason="
+            analyticsData.processing_intent_communicating_rate_reason
+          "
+          :commitGranularityRateReason="analyticsData.commit_granularity_rate_reason"
+        />
       </div>
       <section-error v-if="analyticsStatus === DnaSummaryCreateStatus.Failed" />
       <div
