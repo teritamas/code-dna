@@ -113,9 +113,11 @@ useHead({
 <template>
   <div
     v-if="analyticsStatus === DnaSummaryCreateStatus.NotYet"
-    class="mx-auto max-w-2xl pt-16 sm:pt-24 lg:pt-32"
+    class="mx-auto max-w-2xl pt-8 sm:pt-12 lg:pt-12"
   >
-    <section-analysis />
+    <section-analysis 
+      @syncGithubProviderTokenAndUpdateStatus="syncGithubProviderTokenAndUpdateStatus"
+    />
   </div>
   <div
     v-else-if="analyticsStatus === DnaSummaryCreateStatus.InProgress"

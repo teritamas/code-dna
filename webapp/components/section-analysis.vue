@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const emit = defineEmits(["syncGithubProviderTokenAndUpdateStatus"]);
 const syncGithubProviderTokenAndUpdateStatus = () => {
+  console.log("syncGithubProviderTokenAndUpdateStatus");
   emit("syncGithubProviderTokenAndUpdateStatus");
 };
 </script>
