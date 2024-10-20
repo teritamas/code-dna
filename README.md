@@ -1,8 +1,9 @@
 # CODE DNA
 
 - [デモページ](https://code-dna.vercel.app/)
+- [説明資料](https://www.canva.com/design/DAGUAjzjooQ/M3-xBeEI5sM8QL5uZUnKGw/view?utm_content=DAGUAjzjooQ&utm_campaign=designshare&utm_medium=link&utm_source=editor)
 
-以下の QR コードからもアクセスできます。本アプリケーションはスマートフォンでの利用を推奨しています。
+以下の QR コードからもアクセスできます。
 
 ![QRコード](docs/qr.png)
 
