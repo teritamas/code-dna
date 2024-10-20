@@ -25,7 +25,12 @@ const signOut = async () => {
         <polygon-buttom />
       </div>
     </div>
-    <app-footer class="app-footer" :userId="userId" @signOut="signOut" />
+    <app-footer 
+      v-if="userId"
+      class="app-footer"
+      :userId="userId"
+      @signOut="signOut"
+    />
   </div>
 </template>
 
