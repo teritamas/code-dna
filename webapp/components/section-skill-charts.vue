@@ -92,7 +92,7 @@ const hoveredIndex = ref<number | null>(null);
     <div class="relative w-full pt-5">
       <div class="flex justify-between">
         <span :class="rate.labelClass">{{ rate.title }}</span>
-        <span>{{ rate.dynamicDescription }}</span>
+        <span class="hidden md:inline">{{ rate.dynamicDescription }}</span>
       </div>
 
       <!-- プログレスバー -->
