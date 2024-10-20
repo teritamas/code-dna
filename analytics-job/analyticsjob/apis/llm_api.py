@@ -9,7 +9,10 @@ def generate_text(prompt):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
+            temperature=0.4,
+            top_p=0.0,
+            frequency_penalty=0,
+            presence_penalty=0,
         )
         return response.choices[0].message.content
     except Exception as e:
