@@ -9,7 +9,7 @@ def generate_text(prompt):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
-            temperature=0.4,
+            temperature=0.8,
             top_p=0.0,
             frequency_penalty=0,
             presence_penalty=0,
