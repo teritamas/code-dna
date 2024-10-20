@@ -25,7 +25,7 @@ def main(profile_id, owner, token):
 
         update_by_completed_status(profile_id, parsed_data)
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred main: {e}")
         # profileのステータスを更新
         update_status_by_error(profile_id)
 

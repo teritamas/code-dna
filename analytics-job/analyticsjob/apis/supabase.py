@@ -29,25 +29,50 @@ def update_status_by_error(profile_id: str):
 
 # 処理が完了したらDBのステータスを更新
 def update_by_completed_status(profile_id: str, response: GptIdentityResponse):
-    _ = (
-        supabase.table("code_dna_summary")
-        .update(
-            {
-                "variable_name_simplicity_rate": response.variable_name_simplicity_rate.rate,
-                "method_splitting_coarseness_rate": response.method_splitting_coarseness_rate.rate,
-                "processing_intent_communicating_rate": response.processing_intent_communicating_rate.rate,
-                "commit_granularity_rate": response.commit_granularity_rate.rate,
-                "variable_name_simplicity_rate_reason": response.variable_name_simplicity_rate.reason,
-                "method_splitting_coarseness_rate_reason": response.method_splitting_coarseness_rate.reason,
-                "processing_intent_communicating_rate_reason": response.processing_intent_communicating_rate.reason,
-                "commit_granularity_rate_reason": response.commit_granularity_rate.reason,
-                "summary_comment": response.summary_comment,
-                "identity_name": response.identity_name,
-            }
+    data = (supabase.table("code_dna_summary").select().eq("profile_id", profile_id).execute())
+
+    # データが存在しない場合は新規作成
+    if len(data.data) == 0:
+        _ = (
+            supabase.table("code_dna_summary")
+            .insert(
+                {
+                    "profile_id": profile_id,
+                    "variable_name_simplicity_rate": response.variable_name_simplicity_rate.rate,
+                    "method_splitting_coarseness_rate": response.method_splitting_coarseness_rate.rate,
+                    "processing_intent_communicating_rate": response.processing_intent_communicating_rate.rate,
+                    "commit_granularity_rate": response.commit_granularity_rate.rate,
+                    "variable_name_simplicity_rate_reason": response.variable_name_simplicity_rate.reason,
+                    "method_splitting_coarseness_rate_reason": response.method_splitting_coarseness_rate.reason,
+                    "processing_intent_communicating_rate_reason": response.processing_intent_communicating_rate.reason,
+                    "commit_granularity_rate_reason": response.commit_granularity_rate.reason,
+                    "summary_comment": response.summary_comment,
+                    "identity_name": response.identity_name,
+                }
+            )
+            .execute()
         )
-        .eq("profile_id", profile_id)
-        .execute()
-    )
+    # データが存在する場合は更新
+    else:
+        _ = (
+            supabase.table("code_dna_summary")
+            .update(
+                {
+                    "variable_name_simplicity_rate": response.variable_name_simplicity_rate.rate,
+                    "method_splitting_coarseness_rate": response.method_splitting_coarseness_rate.rate,
+                    "processing_intent_communicating_rate": response.processing_intent_communicating_rate.rate,
+                    "commit_granularity_rate": response.commit_granularity_rate.rate,
+                    "variable_name_simplicity_rate_reason": response.variable_name_simplicity_rate.reason,
+                    "method_splitting_coarseness_rate_reason": response.method_splitting_coarseness_rate.reason,
+                    "processing_intent_communicating_rate_reason": response.processing_intent_communicating_rate.reason,
+                    "commit_granularity_rate_reason": response.commit_granularity_rate.reason,
+                    "summary_comment": response.summary_comment,
+                    "identity_name": response.identity_name,
+                }
+            )
+            .eq("profile_id", profile_id)
+            .execute()
+        )
     # profileのステータスを更新
     _ = (
         supabase.table("profiles")
