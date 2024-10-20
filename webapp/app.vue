@@ -16,9 +16,15 @@ const signOut = async () => {
 </script>
 <template>
   <div>
-    <main>
-      <NuxtPage />
-    </main>
+    <div class="bg-white">
+      <div class="relative isolate px-6 lg:px-8">
+        <polygon-top />
+        <main>
+          <NuxtPage />
+        </main>
+        <polygon-buttom />
+      </div>
+    </div>
     <app-footer class="app-footer" :userId="userId" @signOut="signOut" />
   </div>
 </template>

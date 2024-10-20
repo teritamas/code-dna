@@ -182,7 +182,14 @@ watch(
 
 <template>
   <ClientOnly>
-    <div class="p-12 max-lg:p-4 tooltip-wrapper">
+    <blur-reveal :delay="0.2" :duration="0.75">
+      <h2
+        class="pb-2 text-center text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-transparent bg-clip-text bg-gradient-to-r from-red-200 via-red-300 to-yellow-200"
+      >
+        Engineer Identity Map
+      </h2>
+    </blur-reveal>
+    <div class="py-12 pt-6 max-lg:p-2 tooltip-wrapper">
       <GlowBorder
         class="relative flex h-[80vh] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl"
         :color="['#A07CFE', '#FE8FB5', '#FFBE7B']"

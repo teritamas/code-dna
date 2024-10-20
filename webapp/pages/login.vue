@@ -24,7 +24,7 @@ useHead({
         <img src="/CodeDNA.PNG" alt="CODE DNA 🧬" />
 
         <p class="font-light text-gray-600 p-3">
-          GitHubのコードデータを使って、あなたの「コーディングDNA」を解析し、エンジニアアイデンティティを明らかにします。
+          GitHubデータからあなたの“コーディングDNA”を解析！エンジニアとしてのアイデンティティを、言葉で可視化します。
         </p>
       </blur-reveal>
     </div>
