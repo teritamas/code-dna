@@ -35,7 +35,7 @@ const progressRates = computed(() => [
   {
     title: "変数名の付け方",
     dynamicDescription:
-      props.variableNameSimplicityRate >= 0.5
+      props.variableNameSimplicityRate <= 0.5
         ? "文章のような変数名（変数の役割や内容を詳細に伝える）"
         : "短く簡潔に記述された変数名",
     value: props.variableNameSimplicityRate,
@@ -59,7 +59,7 @@ const progressRates = computed(() => [
   {
     title: "処理の意図を伝える手段",
     dynamicDescription:
-      props.processingIntentCommunicatingRate >= 0.5
+      props.processingIntentCommunicatingRate <= 0.5
         ? "メソッドやクラス名、変数名で表現"
         : "コメントで補足説明",
     value: props.processingIntentCommunicatingRate,
