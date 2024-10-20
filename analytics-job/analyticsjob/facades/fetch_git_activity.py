@@ -7,7 +7,6 @@ def fetch_by_push_event(gh_activity, headers, max_file_count: 100):
     # 最新のPushEventのリポジトリ名を取得する
     change_files = ""
     push_events.sort(key=lambda x: x["created_at"], reverse=True)
-    print(f"最新のPushEvent: {push_events[0]['created_at']}")
 
     file_count = 0
     for event in push_events:
@@ -22,7 +21,7 @@ def fetch_by_push_event(gh_activity, headers, max_file_count: 100):
         for file in commit_data["files"]:
             # ファイルが画像やsvgファイルの場合はスキップ
             if file["filename"].endswith(
-                (".png", ".jpg", ".jpeg", ".svg", ".gif", ".zip", ".json", ".md")
+                (".png", ".jpg", ".jpeg", ".svg", ".gif", ".zip", ".json", ".md", ".yml", ".yaml", ".lock", ".toml", ".xml", '.txt', '.gitignore', '.gitattributes', '.gitmodules', '.gitkeep', '.gitconfig', '.git')
             ):
                 continue
 
