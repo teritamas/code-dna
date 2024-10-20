@@ -30,3 +30,13 @@ web アプリとジョブの詳細は、それぞれ以下の README.md を参�
 | Supabase | データベースの永続化とユーザ認証                                                    | [Supabase](https://supabase.io/) |
 | Open AI  | ユーザのエンジニアアイデンティティを分析                                            | [Open AI](https://openai.com/)   |
 | GCP      | ユーザのエンジニアアイデンティティを解析処理を実施するジョブを Cloud Run にデプロイ | [GCP](https://cloud.google.com/) |
+
+## 開発者向け
+
+### 定期実行する
+
+以下のコマンドで、10 秒おきにジョブを実行する
+
+```bash
+bash cron_job.sh
+```
