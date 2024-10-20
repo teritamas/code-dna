@@ -86,7 +86,7 @@ const fetchMapRelation = async () => {
         item.variable_name_simplicity_rate -
           tempDataTarget.variable_name_simplicity_rate
       );
-      if (variable_name_simplicity_rate_diff <= 0.4) {
+      if (variable_name_simplicity_rate_diff <= 0.1) {
         const newEdge = {
           [`${item.id}-${tempDataTarget}-variable_name_simplicity_rate`]: {
             name: "変数名の付け方",
@@ -103,7 +103,7 @@ const fetchMapRelation = async () => {
         item.method_splitting_coarseness_rate -
           tempDataTarget.method_splitting_coarseness_rate
       );
-      if (method_splitting_coarseness_rate_diff <= 0.4) {
+      if (method_splitting_coarseness_rate_diff <= 0.1) {
         const newEdge = {
           [`${item.id}-${tempDataTarget}-method_splitting_coarseness_rate`]: {
             name: "メソッドの分割粒度",
@@ -120,7 +120,7 @@ const fetchMapRelation = async () => {
         item.processing_intent_communicating_rate -
           tempDataTarget.processing_intent_communicating_rate
       );
-      if (processing_intent_communicating_rate_diff <= 0.4) {
+      if (processing_intent_communicating_rate_diff <= 0.1) {
         const newEdge = {
           [`${item.id}-${tempDataTarget}-processing_intent_communicating_rate`]:
             {
@@ -137,7 +137,7 @@ const fetchMapRelation = async () => {
       const commit_granularity_rate_diff = Math.abs(
         item.commit_granularity_rate - tempDataTarget.commit_granularity_rate
       );
-      if (commit_granularity_rate_diff <= 0.4) {
+      if (commit_granularity_rate_diff <= 0.1) {
         const newEdge = {
           [`${item.id}-${tempDataTarget}-commit_granularity_rate`]: {
             name: "コミットの粒度",
