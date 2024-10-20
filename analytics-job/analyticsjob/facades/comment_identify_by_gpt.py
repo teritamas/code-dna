@@ -6,8 +6,7 @@ import json
 def get_by_push_event(change_files: str) -> GptIdentityResponse:
     prompt = (
         """以下のユーザのコードを見て、ユーザのエンジニアとしてのアイデンティティを診断してください。ソースコードは、この文章の下に続きます。
-""" + change_files +
-"""スキルを評価するのではなく、その人のエンジニアとしてのアイデンティティ見極めてください。
+スキルを評価するのではなく、その人のエンジニアとしてのアイデンティティ見極めてください。
 
 以下の1~4の項目については、0~1の間で、どちらの傾向があるか示してください。
 このスコアは、1が最も良いわけではなく、位置付けを示すものであるので、0であることも否定的にはならないでください。
@@ -53,7 +52,9 @@ def get_by_push_event(change_files: str) -> GptIdentityResponse:
     "summary_comment": "エンジニアとしてのアイデンティティの説明を250文字以内で記入",
     "identity_name": "エンジニアとしてのアイデンティティのラベル"
 }
-""")
+
+解析対象のソースコードは以下に続きます。
+""" + change_files)
     response = generate_text(prompt)
     try:
         parsed_data = GptIdentityResponse.model_validate(json.loads(response))
